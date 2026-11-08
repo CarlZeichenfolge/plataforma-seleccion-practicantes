@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registro de practicantes</title>
+    <meta name="description" content="Registra tu postulación a la convocatoria de prácticas." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/registro.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </span>
+          <span>Selección de Practicantes</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container container--narrow">
+        <section class="page-intro">
+          <span class="eyebrow">Convocatoria de prácticas</span>
+          <h1>Registra tu postulación</h1>
+          <p>Completa tus datos y adjunta tu hoja de vida en PDF. El equipo de selección revisará tu perfil.</p>
+        </section>
+
+        <div class="card">
+          <div id="form-alert" class="alert alert-error" role="alert" hidden></div>
+
+          <form id="registro-form" class="form" novalidate>
+            <div class="field">
+              <label for="nombre">Nombre completo<span class="required" aria-hidden="true">*</span></label>
+              <input class="input" id="nombre" name="nombre" type="text" autocomplete="name" maxlength="100"
+                     placeholder="Ej. María Fernanda López" required aria-describedby="nombre-error" />
+              <p class="error-text" id="nombre-error" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="correo">Correo electrónico<span class="required" aria-hidden="true">*</span></label>
+              <input class="input" id="correo" name="correo" type="email" autocomplete="email" maxlength="254"
+                     placeholder="nombre@correo.com" required aria-describedby="correo-error" />
+              <p class="error-text" id="correo-error" aria-live="polite"></p>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="carrera">Carrera universitaria<span class="required" aria-hidden="true">*</span></label>
+                <input class="input" id="carrera" name="carrera" type="text" list="carreras" maxlength="100"
+                       placeholder="Ej. Ingeniería de Sistemas" required aria-describedby="carrera-error" />
+                <datalist id="carreras">
+                  <option value="Ingeniería de Sistemas"></option>
+                  <option value="Ingeniería de Software"></option>
+                  <option value="Ingeniería Electrónica"></option>
+                  <option value="Ingeniería Industrial"></option>
+                  <option value="Ciencia de Datos"></option>
+                  <option value="Matemáticas"></option>
+                  <option value="Estadística"></option>
+                  <option value="Administración de Empresas"></option>
+                  <option value="Economía"></option>
+                  <option value="Contaduría Pública"></option>
+                  <option value="Diseño Gráfico"></option>
+                </datalist>
+                <p class="error-text" id="carrera-error" aria-live="polite"></p>
+              </div>
+
+              <div class="field">
+                <label for="semestre">Semestre actual<span class="required" aria-hidden="true">*</span></label>
+                <select class="select" id="semestre" name="semestre" required aria-describedby="semestre-error">
+                  <option value="">Selecciona</option>
+                  <option value="1">1.º</option>
+                  <option value="2">2.º</option>
+                  <option value="3">3.º</option>
+                  <option value="4">4.º</option>
+                  <option value="5">5.º</option>
+                  <option value="6">6.º</option>
+                  <option value="7">7.º</option>
+                  <option value="8">8.º</option>
+                  <option value="9">9.º</option>
+                  <option value="10">10.º</option>
+                  <option value="11">11.º</option>
+                  <option value="12">12.º</option>
+                </select>
+                <p class="error-text" id="semestre-error" aria-live="polite"></p>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="label" id="hojaVida-label">Hoja de vida (PDF)<span class="required" aria-hidden="true">*</span></span>
+
+              <label class="dropzone" id="dropzone" for="hojaVida">
+                <span class="dropzone-icon" aria-hidden="true">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+                </span>
+                <span class="dropzone-title">Arrastra tu PDF aquí o <span>selecciónalo</span></span>
+                <span class="hint" id="hojaVida-hint">Solo archivos PDF de máximo 5 MB.</span>
+                <input id="hojaVida" name="hojaVida" type="file" accept=".pdf,application/pdf" required
+                       aria-labelledby="hojaVida-label" aria-describedby="hojaVida-hint hojaVida-error" />
+              </label>
+
+              <div class="file-info" id="file-info" hidden>
+                <span class="file-info-icon" aria-hidden="true">PDF</span>
+                <div class="file-info-text">
+                  <p class="file-info-name" id="file-name"></p>
+                  <p class="file-info-size" id="file-size"></p>
+                </div>
+                <button type="button" class="btn btn-ghost" id="file-remove">Quitar</button>
+              </div>
+
+              <p class="error-text" id="hojaVida-error" aria-live="polite"></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+              <span class="spinner" id="submit-spinner" aria-hidden="true" hidden></span>
+              <span id="submit-text">Enviar postulación</span>
+            </button>
+
+            <p class="form-note">Los campos marcados con <span class="required">*</span> son obligatorios.</p>
+          </form>
+
+          <section class="success-state" id="registro-exito" hidden tabindex="-1" aria-labelledby="exito-titulo">
+            <span class="success-icon" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+            <h2 id="exito-titulo">¡Postulación enviada!</h2>
+            <p>Gracias, <strong id="exito-nombre"></strong>. Tu información quedó registrada y será revisada por el equipo de selección.</p>
+            <button type="button" class="btn btn-secondary" id="nuevo-registro">Registrar otro practicante</button>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">Plataforma de Selección de Practicantes</div>
+    </footer>
+  </body>
+</html>
