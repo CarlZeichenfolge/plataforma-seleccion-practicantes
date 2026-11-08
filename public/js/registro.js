@@ -13,6 +13,7 @@ const inputArchivo = document.getElementById('hojaVida');
 const fileInfo = document.getElementById('file-info');
 const botonQuitar = document.getElementById('file-remove');
 const submitBtn = document.getElementById('submit-btn');
+const seccionFormulario = document.getElementById('registro-seccion');
 const exito = document.getElementById('registro-exito');
 
 const limpiar = (valor) => valor.trim().replace(/\s+/g, ' ');
@@ -207,7 +208,7 @@ form.addEventListener('submit', async (e) => {
 // ---------- Éxito y nuevo registro ----------
 function mostrarExito(practicante) {
   document.getElementById('exito-nombre').textContent = practicante.nombre ?? '';
-  form.hidden = true;
+  seccionFormulario.hidden = true;
   exito.hidden = false;
   exito.focus();
 }
@@ -217,6 +218,6 @@ document.getElementById('nuevo-registro').addEventListener('click', () => {
   Object.keys(reglas).forEach((campo) => marcarCampo(campo, ''));
   actualizarVistaArchivo();
   exito.hidden = true;
-  form.hidden = false;
+  seccionFormulario.hidden = false;
   form.elements.nombre.focus();
 });
