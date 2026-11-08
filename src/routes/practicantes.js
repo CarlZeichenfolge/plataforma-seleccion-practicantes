@@ -4,6 +4,13 @@ const path = require('node:path');
 const express = require('express');
 const { validarRegistro, esPdfValido } = require('../validators/practicanteValidator');
 const { createUploadHojaVida } = require('../middlewares/uploadHojaVida');
+const { ESTADOS } = require('../db');
+
+/** Convierte el :id de la URL en entero positivo, o null si no es válido. */
+function parsearId(valor) {
+  const id = Number(valor);
+  return /^\d+$/.test(valor) && Number.isSafeInteger(id) && id > 0 ? id : null;
+}
 
 /** Deja solo un nombre de archivo legible para mostrarlo; nunca se usa como ruta. */
 function limpiarNombreOriginal(nombre) {
@@ -57,6 +64,45 @@ function createPracticantesRouter({ repo, uploadDir, maxFileBytes }) {
       }
       throw error;
     }
+  });
+
+  // GET /api/practicantes?estado=viable -> lista de practicantes (filtro opcional).
+  router.get('/', (req, res) => {
+    const { estado } = req.query;
+    if (estado !== undefined && !ESTADOS.includes(estado)) {
+      return res.status(400).json({ error: `Estado inválido. Valores permitidos: ${ESTADOS.join(', ')}.` });
+    }
+    res.json(repo.listar(estado));
+  });
+
+  // GET /api/practicantes/:id -> detalle de un practicante.
+  router.get('/:id', (req, res) => {
+    const id = parsearId(req.params.id);
+    if (!id) return res.status(400).json({ error: 'El id debe ser un número entero positivo.' });
+
+    const practicante = repo.obtenerPorId(id);
+    if (!practicante) return res.status(404).json({ error: 'Practicante no encontrado.' });
+
+    res.json(practicante);
+  });
+
+  // PATCH /api/practicantes/:id/estado -> marca como viable / no viable (o vuelve a pendiente).
+  router.patch('/:id/estado', (req, res) => {
+    const id = parsearId(req.params.id);
+    if (!id) return res.status(400).json({ error: 'El id debe ser un número entero positivo.' });
+
+    const estado = req.body?.estado;
+    if (!ESTADOS.includes(estado)) {
+      return res.status(400).json({
+        error: `Estado inválido. Valores permitidos: ${ESTADOS.join(', ')}.`,
+        detalles: { estado: 'Estado inválido.' },
+      });
+    }
+
+    const practicante = repo.actualizarEstado(id, estado);
+    if (!practicante) return res.status(404).json({ error: 'Practicante no encontrado.' });
+
+    res.json(practicante);
   });
 
   return router;

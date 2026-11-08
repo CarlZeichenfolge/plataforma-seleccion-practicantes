@@ -17,6 +17,9 @@ function createPracticanteRepository(db) {
       VALUES (@nombre, @correo, @carrera, @semestre, @hojaVidaArchivo, @hojaVidaNombre)
     `),
     listar: db.prepare(`SELECT ${COLUMNAS_PUBLICAS} FROM practicantes ORDER BY creado_en DESC, id DESC`),
+    listarPorEstado: db.prepare(`
+      SELECT ${COLUMNAS_PUBLICAS} FROM practicantes WHERE estado = ? ORDER BY creado_en DESC, id DESC
+    `),
     porId: db.prepare(`SELECT ${COLUMNAS_PUBLICAS} FROM practicantes WHERE id = ?`),
     archivoPorId: db.prepare(`
       SELECT hoja_vida_archivo AS archivo, hoja_vida_nombre AS nombre FROM practicantes WHERE id = ?
@@ -33,8 +36,9 @@ function createPracticanteRepository(db) {
       return this.obtenerPorId(lastInsertRowid);
     },
 
-    listar() {
-      return stmts.listar.all();
+    /** Lista todos los practicantes, o solo los de un estado si se indica. */
+    listar(estado) {
+      return estado ? stmts.listarPorEstado.all(estado) : stmts.listar.all();
     },
 
     obtenerPorId(id) {
