@@ -292,6 +292,18 @@ function pintarDetalle() {
   $('d-actualizado').textContent = formatoFechaHora.format(aFecha(p.actualizadoEn));
   $('d-archivo').textContent = p.hojaVidaNombre;
 
+  // La vista previa solo se recarga si cambia el practicante (no al marcar su estado).
+  const urlHojaVida = `/api/practicantes/${p.id}/hoja-de-vida`;
+  const preview = $('d-preview');
+  if (preview.dataset.id !== String(p.id)) {
+    preview.dataset.id = p.id;
+    preview.src = urlHojaVida;
+    preview.title = `Vista previa de la hoja de vida de ${p.nombre}`;
+  }
+  $('d-abrir').href = urlHojaVida;
+  $('d-descargar').href = `${urlHojaVida}?descargar=1`;
+  $('d-descargar').setAttribute('aria-label', `Descargar la hoja de vida de ${p.nombre}`);
+
   $('d-pendiente').hidden = p.estado === 'pendiente';
   $('d-viable').setAttribute('aria-pressed', String(p.estado === 'viable'));
   $('d-no_viable').setAttribute('aria-pressed', String(p.estado === 'no_viable'));
@@ -312,6 +324,9 @@ function cerrarDetalle() {
   $('scrim').hidden = true;
   $('drawer').hidden = true;
   document.body.classList.remove('con-detalle');
+  // Se descarga el PDF de la vista previa para no dejarlo cargado en memoria.
+  $('d-preview').src = 'about:blank';
+  delete $('d-preview').dataset.id;
   document.querySelectorAll('tr.sel').forEach((tr) => tr.classList.remove('sel'));
   // Devuelve el foco a la fila desde la que se abrió, para quien navega con teclado.
   // Se busca por id porque la fila pudo redibujarse mientras el detalle estaba abierto.

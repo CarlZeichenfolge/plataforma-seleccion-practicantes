@@ -6,6 +6,20 @@ const { validarRegistro, esPdfValido } = require('../validators/practicanteValid
 const { createUploadHojaVida } = require('../middlewares/uploadHojaVida');
 const { ESTADOS } = require('../db');
 
+// Los archivos siempre se guardan como "<uuid>.pdf". Se verifica de nuevo antes
+// de leer del disco, como defensa adicional contra rutas manipuladas.
+const REGEX_ARCHIVO = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.pdf$/;
+
+/**
+ * Encabezado Content-Disposition con el nombre original del archivo.
+ * `filename` lleva una versión solo ASCII para navegadores antiguos y
+ * `filename*` la versión UTF-8 completa (tildes, ñ), según el RFC 6266.
+ */
+function contentDisposition(tipo, nombre) {
+  const ascii = nombre.normalize('NFD').replace(/[^\x20-\x7e]/g, '').replace(/["\\]/g, '') || 'hoja-de-vida.pdf';
+  return `${tipo}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(nombre)}`;
+}
+
 /** Convierte el :id de la URL en entero positivo, o null si no es válido. */
 function parsearId(valor) {
   const id = Number(valor);
@@ -88,6 +102,36 @@ function createPracticantesRouter({ repo, uploadDir, maxFileBytes, requiereAnali
     if (!practicante) return res.status(404).json({ error: 'Practicante no encontrado.' });
 
     res.json(practicante);
+  });
+
+  // GET /api/practicantes/:id/hoja-de-vida -> entrega el PDF para verlo en el navegador.
+  // Con ?descargar=1 el navegador lo descarga con su nombre original.
+  router.get('/:id/hoja-de-vida', async (req, res) => {
+    const id = parsearId(req.params.id);
+    if (!id) return res.status(400).json({ error: 'El id debe ser un número entero positivo.' });
+
+    const archivo = repo.obtenerArchivo(id);
+    if (!archivo) return res.status(404).json({ error: 'Practicante no encontrado.' });
+    if (!REGEX_ARCHIVO.test(archivo.archivo)) {
+      return res.status(500).json({ error: 'El archivo registrado no es válido.' });
+    }
+
+    const ruta = path.join(uploadDir, archivo.archivo);
+    try {
+      await fs.access(ruta);
+    } catch {
+      return res.status(404).json({ error: 'La hoja de vida no se encuentra en el servidor.' });
+    }
+
+    const descargar = req.query.descargar === '1';
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': contentDisposition(descargar ? 'attachment' : 'inline', archivo.nombre),
+      // Son datos personales: que el navegador no los guarde en caché.
+      'Cache-Control': 'private, no-store',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    res.sendFile(ruta, { cacheControl: false, lastModified: false });
   });
 
   // PATCH /api/practicantes/:id/estado -> marca como viable / no viable (o vuelve a pendiente).

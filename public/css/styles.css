@@ -1506,6 +1506,32 @@ a {
   overflow-wrap: anywhere;
 }
 
+/* ---------- Vista previa de la hoja de vida ---------- */
+.pdf-preview {
+  margin-top: 10px;
+  height: 460px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-card);
+  background: var(--sunk);
+}
+
+.pdf-preview iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.pdf-open {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-ink);
+  text-underline-offset: 2px;
+}
+
 /* ---------- Aviso flotante con "Deshacer" ---------- */
 .toast {
   position: fixed;
