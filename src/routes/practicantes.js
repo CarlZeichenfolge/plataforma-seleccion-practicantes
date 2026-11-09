@@ -18,11 +18,12 @@ function limpiarNombreOriginal(nombre) {
   return (limpio || 'hoja-de-vida.pdf').slice(0, 150);
 }
 
-function createPracticantesRouter({ repo, uploadDir, maxFileBytes }) {
+function createPracticantesRouter({ repo, uploadDir, maxFileBytes, requiereAnalista }) {
   const router = express.Router();
   const uploadHojaVida = createUploadHojaVida({ maxFileBytes });
 
   // POST /api/practicantes -> registra un practicante con su hoja de vida.
+  // Es la única ruta pública: la usan los practicantes desde el formulario.
   router.post('/', uploadHojaVida, async (req, res) => {
     const { datos, errores } = validarRegistro(req.body);
 
@@ -65,6 +66,9 @@ function createPracticantesRouter({ repo, uploadDir, maxFileBytes }) {
       throw error;
     }
   });
+
+  // Desde aquí, todas las rutas exigen una sesión de analista.
+  router.use(requiereAnalista);
 
   // GET /api/practicantes?estado=viable -> lista de practicantes (filtro opcional).
   router.get('/', (req, res) => {

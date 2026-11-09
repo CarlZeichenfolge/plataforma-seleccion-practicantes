@@ -703,6 +703,50 @@ a {
   color: var(--muted);
 }
 
+.auth-alt a {
+  color: var(--brand-ink);
+  font-weight: 700;
+  text-underline-offset: 2px;
+}
+
+.auth-alt .alt-link {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.auth-card--narrow {
+  width: min(460px, 100%);
+}
+
+/* Campo de contraseña con botón "Mostrar / Ocultar" dentro. */
+.pass-wrap {
+  position: relative;
+}
+
+.pass-wrap .input {
+  padding-right: 84px;
+}
+
+.pass-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  min-height: 30px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--r-ctl);
+  background: transparent;
+  color: var(--brand-ink);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.pass-toggle:hover {
+  background: var(--hover);
+}
+
 /* ---------- Confirmación de envío ---------- */
 .done {
   display: grid;
@@ -864,6 +908,60 @@ a {
   border-top: 1px solid var(--rail-line);
   display: grid;
   gap: 10px;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.who-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--action);
+  color: var(--on-action);
+  font-family: var(--f-d);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.who-text {
+  min-width: 0;
+}
+
+.who-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.who-role {
+  font-size: 12.5px;
+  color: var(--rail-mute);
+}
+
+.side .who-out {
+  background: transparent;
+  border-color: var(--rail-line);
+  color: var(--rail-ink);
+}
+
+.side .who-out:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .side .theme-btn {

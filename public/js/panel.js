@@ -58,11 +58,20 @@ function etiquetaEstado(valor) {
 }
 
 // ---------- API ----------
+function irAlLogin(motivo) {
+  window.location.replace(motivo ? `/login.html?sesion=${motivo}` : '/login.html');
+}
+
 async function api(ruta, opciones = {}) {
   const respuesta = await fetch(ruta, {
     ...opciones,
     headers: { 'Content-Type': 'application/json', ...(opciones.headers ?? {}) },
   });
+  // Si la sesión venció mientras el panel estaba abierto, se vuelve al login.
+  if (respuesta.status === 401) {
+    irAlLogin('expirada');
+    throw new Error('Tu sesión expiró.');
+  }
   const datos = await respuesta.json().catch(() => ({}));
   if (!respuesta.ok) throw new Error(datos.error ?? `Error ${respuesta.status}`);
   return datos;
@@ -349,4 +358,28 @@ function ocultarAviso() {
   $('toast').classList.remove('on');
 }
 
+// ---------- Sesión ----------
+async function cargarSesion() {
+  try {
+    const sesion = await api('/api/auth/sesion');
+    if (!sesion.autenticado) return irAlLogin('expirada');
+    $('who-usuario').textContent = sesion.usuario;
+    $('who-inicial').textContent = sesion.usuario.charAt(0);
+  } catch {
+    // Si falla la red, el error se muestra al cargar la lista.
+  }
+}
+
+async function cerrarSesion() {
+  document.querySelectorAll('[data-logout]').forEach((b) => (b.disabled = true));
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } finally {
+    irAlLogin();
+  }
+}
+
+document.querySelectorAll('[data-logout]').forEach((b) => b.addEventListener('click', cerrarSesion));
+
+cargarSesion();
 cargar();

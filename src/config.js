@@ -6,7 +6,6 @@ const ROOT = path.resolve(__dirname, '..');
 // para que el proyecto funcione aunque no exista un archivo .env.
 const config = {
   port: Number(process.env.PORT) || 3000,
-  sessionSecret: process.env.SESSION_SECRET || 'secreto-solo-para-desarrollo',
   adminUser: process.env.ADMIN_USER || 'analista',
   adminPassword: process.env.ADMIN_PASSWORD || 'Analista123*',
   dbPath: path.resolve(ROOT, process.env.DB_PATH || 'data/practicantes.db'),

@@ -19,6 +19,21 @@ const SCHEMA = `
     creado_en             TEXT    NOT NULL DEFAULT (datetime('now')),
     actualizado_en        TEXT    NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS analistas (
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario               TEXT    NOT NULL UNIQUE COLLATE NOCASE,
+    password_hash         TEXT    NOT NULL,
+    creado_en             TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
+
+  -- Solo se guarda el hash del token de sesión: si alguien copiara la base
+  -- de datos, no podría usar esos valores para entrar.
+  CREATE TABLE IF NOT EXISTS sesiones (
+    token_hash            TEXT    PRIMARY KEY,
+    analista_id           INTEGER NOT NULL REFERENCES analistas(id) ON DELETE CASCADE,
+    expira_en             INTEGER NOT NULL
+  );
 `;
 
 /**
@@ -32,6 +47,7 @@ function createDb(dbPath) {
 
   const db = new Database(dbPath);
   db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
   db.exec(SCHEMA);
   return db;
 }
