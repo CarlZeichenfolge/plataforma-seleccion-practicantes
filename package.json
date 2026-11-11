@@ -16,14 +16,13 @@
     ]
   },
   "engines": {
-    "node": ">=22.9.0"
+    "node": ">=22.13.0"
   },
   "author": "Carlos Alejandro Cadena",
   "license": "MIT",
   "private": true,
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^13.0.3",
     "express": "^5.3.0",
     "multer": "^2.5.0"
   },

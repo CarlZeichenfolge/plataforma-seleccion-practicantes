@@ -4,7 +4,7 @@ const path = require('node:path');
 const express = require('express');
 const { validarRegistro, esPdfValido } = require('../validators/practicanteValidator');
 const { createUploadHojaVida } = require('../middlewares/uploadHojaVida');
-const { ESTADOS } = require('../db');
+const { ESTADOS, esErrorDeUnicidad } = require('../db');
 
 // Los archivos siempre se guardan como "<uuid>.pdf". Se verifica de nuevo antes
 // de leer del disco, como defensa adicional contra rutas manipuladas.
@@ -71,7 +71,7 @@ function createPracticantesRouter({ repo, uploadDir, maxFileBytes, requiereAnali
     } catch (error) {
       // Si falla la base de datos, se borra el archivo para no dejar huérfanos.
       await fs.rm(rutaArchivo, { force: true });
-      if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      if (esErrorDeUnicidad(error)) {
         return res.status(409).json({
           error: 'Ya existe un registro con ese correo.',
           detalles: { correo: 'Este correo ya fue registrado.' },

@@ -1,6 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const Database = require('better-sqlite3');
+// SQLite viene incluido en Node.js (22.13+): no hay que instalar ni compilar
+// ninguna dependencia nativa, así `npm install` funciona en cualquier equipo.
+const { DatabaseSync } = require('node:sqlite');
 
 // Estados válidos de un practicante dentro del proceso de selección.
 const ESTADOS = Object.freeze(['pendiente', 'viable', 'no_viable']);
@@ -45,11 +47,15 @@ function createDb(dbPath) {
     fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   }
 
-  const db = new Database(dbPath);
-  db.pragma('journal_mode = WAL');
-  db.pragma('foreign_keys = ON');
+  const db = new DatabaseSync(dbPath);
+  db.exec('PRAGMA journal_mode = WAL');
+  db.exec('PRAGMA foreign_keys = ON');
   db.exec(SCHEMA);
   return db;
 }
 
-module.exports = { createDb, ESTADOS };
+// Código extendido de SQLite para "violación de restricción UNIQUE".
+const SQLITE_CONSTRAINT_UNIQUE = 2067;
+const esErrorDeUnicidad = (error) => error?.errcode === SQLITE_CONSTRAINT_UNIQUE;
+
+module.exports = { createDb, ESTADOS, esErrorDeUnicidad };

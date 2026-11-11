@@ -44,7 +44,7 @@ Reto técnico **Practicante FullStack 2027-I**. Es una herramienta web donde los
 | Capa | Herramienta |
 |---|---|
 | Back-end | Node.js 22+ y Express 5 |
-| Base de datos | SQLite con better-sqlite3 |
+| Base de datos | SQLite incluido en Node.js (`node:sqlite`), sin dependencias nativas que compilar |
 | Archivos | Multer, con el PDF guardado en `uploads/` |
 | Autenticación | bcryptjs + sesiones propias en SQLite con cookie `HttpOnly` |
 | Front-end | HTML, CSS y JavaScript, sin frameworks |
@@ -52,7 +52,7 @@ Reto técnico **Practicante FullStack 2027-I**. Es una herramienta web donde los
 
 ## Instalación y ejecución
 
-**Requisito:** [Node.js](https://nodejs.org/) **22.9 o superior** (probado con Node 24).
+**Requisito:** [Node.js](https://nodejs.org/) **22.13 o superior** (probado con Node 24). No hace falta instalar nada más: la base de datos SQLite viene incluida en Node.
 
 ```bash
 # 1. Clonar el repositorio
